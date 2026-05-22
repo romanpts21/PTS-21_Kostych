@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<!-- DOCTYPE — оголошення типу документу. Каже браузеру що це HTML5 -->
+<html lang="uk">
+<!-- lang="uk" — мова сторінки (українська), важливо для SEO та доступності -->
+<head>
+  <!-- HEAD — службова частина, невидима користувачу -->
+
+  <meta charset="UTF-8" />
+  <!-- charset=UTF-8 — кодування символів. Без цього українські букви відображатимуться неправильно -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- viewport — критично важливий тег для адаптивного дизайну.
+       width=device-width — ширина сторінки = ширині екрану пристрою
+       initial-scale=1.0 — початковий масштаб 100%, без цього мобільні браузери зменшують сторінку -->
+
+  <title>TarteRose — Авторська пекарня</title>
+  <!-- title — заголовок вкладки в браузері, також використовується пошуковиками -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <!-- Підключення шрифтів з Google Fonts.
+       Playfair Display — декоративний шрифт для заголовків
+       Lato — чистий шрифт для основного тексту
+       rel="stylesheet" — вказує що це таблиця стилів -->
+
+  <style>
+    /* ============================================================
+       CSS ЗМІННІ — зберігають кольори в одному місці.
+       Якщо змінити колір тут — він зміниться скрізь на сторінці.
+       Використання: var(--назва-змінної)
+    ============================================================ */
+    :root {
+      /* :root — кореневий елемент (html), змінні доступні скрізь */
+      --cream: #FDF6EE;       /* кремовий — фон більшості секцій */
+      --warm: #F5E6D3;        /* теплий бежевий — фон карток, іконок */
+      --hero-bg: #F7E0C8;     /* персиковий — запасний фон hero */
+      --rose: #E8A598;        /* рожевий — теги, акценти */
+      --rose-dark: #C4705F;   /* темно-рожевий — ціни, акцентний текст */
+      --brown: #6B3E26;       /* коричневий — основний колір бренду */
+      --brown-light: #A0694F; /* світло-коричневий — hover стани */
+      --text: #2E1B0E;        /* майже чорний — основний текст */
+      --text-muted: #7A5C48;  /* приглушений — другорядний текст */
+      --white: #ffffff;       /* білий */
+      --border: #F0DDD0;      /* колір рамок карток */
+    }
+
+    /* ============================================================
+       RESET — скидаємо стандартні стилі браузера.
+       Різні браузери мають різні відступи за замовчуванням,
+       тому скидаємо все і починаємо з нуля.
+    ============================================================ */
+    * {
+      /* * — зірочка означає "всі елементи на сторінці" */
+      box-sizing: border-box;
+      /* border-box — розмір елемента включає padding і border.
+         Без цього padding збільшував би реальний розмір елемента */
+      margin: 0;    /* прибираємо зовнішні відступи */
+      padding: 0;   /* прибираємо внутрішні відступи */
+    }
+
+    html { scroll-behavior: smooth; }
+    /* scroll-behavior: smooth — плавна прокрутка при кліку на якірні посилання (#hero, #about тощо) */
+
+    body {
+      font-family: 'Lato', sans-serif;
+      /* font-family — шрифт за замовчуванням для всього тексту */
+      background-color: var(--cream);
+      color: var(--text);
+    }
+
+    h1, h2, h3 {
+      font-family: 'Playfair Display', serif;
+      /* Всі заголовки використовують декоративний шрифт Playfair Display */
+    }
+
+    img {
+      max-width: 100%;  /* зображення не виходять за межі контейнера */
+      display: block;   /* прибирає зайвий відступ знизу зображення */
+    }
+
+    /* ============================================================
+       НАВІГАЦІЯ
+       Лаба 2: Flexbox для горизонтального розміщення
+       Лаба 3: випадаюче меню + бургер
+    ============================================================ */
+    nav {
+      position: sticky;
+      /* sticky — навбар прилипає до верху при прокрутці */
+      top: 0;
+      z-index: 1000;
+      /* z-index: 1000 — навбар завжди поверх усього іншого контенту */
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+
+      /* === FLEXBOX (Лаба 2) === */
+      display: flex;
+      /* Вмикає flexbox — елементи стають гнучкими */
+      align-items: center;
+      /* Вирівнює елементи по центру вертикальної осі */
+      justify-content: space-between;
+      /* Лого зліва, меню посередині, кнопка справа */
+      padding: 0 60px;
+    }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--brown);
+      text-decoration: none; /* прибирає підкреслення з посилання */
+    }
+
+    .nav-logo span {
+      color: var(--rose-dark); /* "Rose" виділене рожевим */
+    }
+
+    /* --- ЛАБА 3: Випадаюче меню --- */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none; /* прибирає крапки списку */
+    }
+
+    .nav-links li {
+      position: relative;
+      /* relative — необхідно щоб дочірній .dropdown позиціонувався
+         відносно цього li, а не відносно вікна браузера */
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+      /* transition — анімація зміни властивостей за 0.2 секунди */
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-links a:hover {
+      /* :hover — стиль при наведенні курсору */
+      color: var(--brown);
+      background: var(--cream);
+    }
+
+    /* Стрілка після пункту "Меню" */
+    .nav-links .has-dropdown > a::after {
+      /* ::after — псевдоелемент, додає вміст після елементу */
+      content: '▾'; /* символ стрілки вниз */
+      font-size: 10px;
+      margin-left: 2px;
+    }
+
+    /* Випадаючий список */
+    .dropdown {
+      display: none;
+      /* Прихований за замовчуванням */
+      position: absolute;
+      /* absolute — виривається з потоку і позиціонується відносно li */
+      top: 100%;
+      /* 100% від висоти батька — одразу під пунктом меню */
+      padding-top: 16px;
+      margin-top: -8px;
+      /* Хитрість: від'ємний margin + padding створює невидимий міст
+         між кнопкою і меню. Без цього меню зникало при переміщенні курсору */
+      left: 0;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 180px;
+      padding: 8px;
+      box-shadow: 0 8px 24px rgba(107,62,38,0.1);
+      z-index: 100;
+      list-style: none;
+    }
+
+    .has-dropdown:hover .dropdown {
+      display: block; /* показати при наведенні на батьківський li */
+    }
+
+    .dropdown li a {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: block; /* посилання займає весь рядок */
+    }
+
+    .dropdown li a:hover {
+      background: var(--cream);
+      color: var(--brown);
+    }
+
+    .nav-btn {
+      background: var(--brown);
+      color: var(--white);
+      border: none;
+      padding: 10px 22px;
+      border-radius: 30px; /* пілюля-форма */
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover { background: var(--brown-light); }
+
+    /* --- ЛАБА 3: Бургер кнопка --- */
+    .burger {
+      display: none;
+      /* На ПК прихована. Показується через @media (max-width: 768px) */
+      flex-direction: column; /* три лінії одна під одною */
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+
+    .burger span {
+      /* Кожна з трьох горизонтальних ліній */
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--brown);
+      border-radius: 2px;
+      transition: all 0.3s;
+      /* transition: all — анімуємо transform і opacity за 0.3 секунди */
+    }
+
+    /* Анімація перетворення бургера на хрестик */
+    .burger.open span:nth-child(1) {
+      /* nth-child(1) — перша лінія */
+      transform: translateY(7px) rotate(45deg);
+      /* translateY(7px) — зміщуємо вниз до центру
+         rotate(45deg) — повертаємо на 45° → утворює "/" */
+    }
+    .burger.open span:nth-child(2) {
+      opacity: 0; /* середня лінія зникає */
+    }
+    .burger.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+      /* Зміщуємо вгору і повертаємо → утворює "\"
+         Разом з першою лінією утворюють хрестик "×" */
+    }
+
+    /* Мобільне меню */
+    .mobile-menu {
+      display: none;
+      /* Приховане. Показується через JS (.open клас) */
+      position: fixed;
+      /* fixed — фіксується відносно вікна, не прокручується */
+      top: 64px;  /* одразу під навбаром */
+      left: 0;
+      right: 0;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      z-index: 999;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .mobile-menu.open {
+      display: flex;
+      /* Клас .open додається JS при кліку на бургер */
+    }
+
+    .mobile-menu a {
+      padding: 12px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none; /* останній без лінії знизу */
+    }
+
+    /* ============================================================
+       HERO СЕКЦІЯ
+       Лаба 4: фонове зображення (background-image)
+       Лаба 2: Flexbox для двоколонного компонування
+    ============================================================ */
+    .hero {
+      /* === ЛАБА 4: Фонове зображення === */
+      background-color: var(--hero-bg);
+      /* Запасний колір якщо зображення не завантажиться */
+      background-image: url('https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=1440&q=60&auto=format');
+      /* URL зображення. Для локального: url('images/hero.jpg') */
+      background-size: cover;
+      /* cover — масштабує зображення щоб покрити весь елемент зберігаючи пропорції */
+      background-position: center;
+      /* Центрує зображення — обрізаються краї а не центр */
+      background-attachment: fixed;
+      /* fixed — ефект паралаксу: зображення не прокручується зі сторінкою */
+
+      position: relative; /* для псевдоелементу ::before (оверлей) */
+      padding: 80px 60px;
+      min-height: 600px;
+
+      /* === ЛАБА 2: Flexbox === */
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* текст зліва, картки справа */
+      gap: 40px;
+    }
+
+    /* Напівпрозорий оверлей поверх зображення */
+    .hero::before {
+      content: '';
+      /* Обов'язково для ::before — без цього псевдоелемент не відображається */
+      position: absolute;
+      inset: 0;
+      /* inset: 0 = top:0; right:0; bottom:0; left:0 — розтягує на весь елемент */
+      background: rgba(247, 224, 200, 0.82);
+      /* rgba — кремовий колір з 82% непрозорістю.
+         Робить фото приглушеним щоб текст добре читався */
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      /* z-index: 1 — контент відображається ПОВЕРХ оверлею */
+      max-width: 480px;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: var(--rose);
+      color: var(--white);
+      font-size: 11px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 1.5px;  /* розширений міжлітерний інтервал */
+      text-transform: uppercase; /* всі букви великі */
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      line-height: 1.1; /* міжрядковий інтервал 110% */
+      color: var(--brown);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      color: var(--rose-dark);
+      font-style: italic; /* "душею" виділене курсивом рожевим */
+    }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    /* Flexbox для двох кнопок в рядок */
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap; /* перенос якщо не вміщуються */
+    }
+
+    .btn-primary {
+      background: var(--brown);
+      color: var(--white);
+      border: none;
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover { background: var(--brown-light); }
+
+    .btn-secondary {
+      background: transparent; /* прозорий — тільки контур */
+      color: var(--brown);
+      border: 2px solid var(--brown);
+      padding: 14px 30px;
+      border-radius: 30px;
+      font-size: 15px;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--brown); /* заповнюється при наведенні */
+      color: var(--white);
+    }
+
+    /* Flexbox для карток тістечок */
+    .hero-cards {
+      position: relative;
+      z-index: 1; /* поверх оверлею */
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 420px;
+    }
+
+    .hero-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid var(--border);
+      width: 180px;
+      box-shadow: 0 4px 16px rgba(107,62,38,0.08);
+      /* box-shadow: зміщення-x зміщення-y розмиття колір */
+    }
+
+    .hero-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      /* object-fit: cover — для тегу <img>, аналог background-size: cover */
+      border-radius: 12px;
+      margin: 0 auto 10px; /* auto центрує горизонтально */
+    }
+
+    /* ============================================================
+       СПІЛЬНІ СТИЛІ СЕКЦІЙ
+    ============================================================ */
+    section { padding: 80px 60px; }
+
+    .section-label {
+      /* Маленький текст-підпис: "ПРО НАС", "ЧОМУ МИ" */
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2.5px;
+      color: var(--rose-dark);
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 36px;
+      color: var(--brown);
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-body {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ============================================================
+       СЕКЦІЯ "ПРО НАС" — Flexbox (Лаба 2)
+    ============================================================ */
+    .about {
+      background: var(--white);
+      display: flex;
+      align-items: center; /* фото і текст по центру вертикально */
+      gap: 60px;
+    }
+
+    .about-img {
+      position: relative; /* для бейджа "2016" з position: absolute */
+      flex-shrink: 0;
+      /* flex-shrink: 0 — забороняє стискання фото при нестачі місця */
+    }
+
+    .about-img img {
+      width: 480px;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+
+    .about-badge {
+      /* Бейдж "2016 Рік заснування" у правому нижньому куті фото */
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: var(--brown);
+      color: var(--white);
+      border-radius: 14px;
+      padding: 12px 18px;
+      text-align: center;
+    }
+
+    .about-stats {
+      /* Flexbox для "50+ | 8 | 2000+" */
+      display: flex;
+      gap: 32px;
+      margin-top: 32px;
+    }
+
+    .stat .n {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--brown);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .stat .l {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       СЕКЦІЯ "ПЕРЕВАГИ" — Flexbox сітка 3x2 (Лаба 2)
+    ============================================================ */
+    .advantages {
+      background: var(--cream);
+      text-align: center;
+    }
+
+    .advantages-grid {
+      display: flex;
+      flex-wrap: wrap;
+      /* flex-wrap: wrap — картки переносяться на новий рядок */
+      gap: 20px;
+      margin-top: 48px;
+      justify-content: center;
+    }
+
+    .adv-card {
+      background: var(--white);
+      border-radius: 18px;
+      padding: 32px 24px;
+      border: 1px solid var(--border);
+      width: calc(33.333% - 14px);
+      /* calc() — обчислення: 1/3 ширини мінус компенсація gap → 3 в рядок */
+      min-width: 220px;
+      display: flex;
+      flex-direction: column; /* іконка, назва, текст — вертикально */
+      align-items: center;
+      gap: 12px;
+    }
+
+    .adv-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: var(--warm);
+      display: flex;
+      align-items: center;
+      justify-content: center; /* іконка по центру квадрату */
+      font-size: 26px;
+    }
+
+    .adv-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+
+    .adv-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       СЕКЦІЯ "МЕНЮ" — Flexbox сітка 4x1 (Лаба 2)
+    ============================================================ */
+    .menu-section { background: var(--white); }
+
+    .menu-tabs {
+      /* Вкладки "Усі | Тортики | Капкейки..." */
+      display: flex;
+      gap: 8px;
+      margin: 28px 0 36px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: transparent;
+      font-family: 'Lato', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      /* Клас .active додається JavaScript при кліку */
+      background: var(--brown);
+      color: var(--white);
+      border-color: var(--brown);
+    }
+
+    .menu-grid {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .menu-item {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      overflow: hidden; /* обрізає фото по border-radius */
+      width: calc(25% - 15px);
+      /* 25% = 1/4 ширини → 4 картки в рядок */
+      min-width: 200px;
+    }
+
+    .menu-img {
+      height: 180px;
+      background: var(--warm);
+      overflow: hidden;
+    }
+
+    .menu-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .menu-item:hover .menu-img img {
+      transform: scale(1.05); /* zoom при наведенні на картку */
+    }
+
+    .menu-info { padding: 16px; }
+
+    .menu-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--brown);
+      margin-bottom: 6px;
+    }
+
+    .menu-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .menu-footer {
+      /* Flexbox: ціна зліва, кнопка "+" справа */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--rose-dark);
+    }
+
+    .add-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%; /* круглий */
+      background: var(--brown);
+      color: var(--white);
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .add-btn:hover { background: var(--brown-light); }
+
+    /* ============================================================
+       СЕКЦІЯ "ГАЛЕРЕЯ" — Flexbox сітка (Лаба 2)
+    ============================================================ */
+    .gallery-section { background: var(--cream); }
+
+    .gallery-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 36px;
+    }
+
+    .gal-item {
+      border-radius: 16px;
+      overflow: hidden;
+      height: 220px;
+      flex: 1;
+      /* flex: 1 — рівна частина простору для кожного фото */
+      min-width: 200px;
+    }
+
+    .gal-item.big {
+      flex: 2;
+      /* flex: 2 — вдвічі більше простору → перше фото ширше */
+    }
+
+    .gal-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .gal-item:hover img { transform: scale(1.05); }
+
+    /* ============================================================
+       СЕКЦІЯ "ВІДГУКИ" — Flexbox (Лаба 2)
+    ============================================================ */
+    .reviews {
+      background: var(--white);
+      text-align: center;
+    }
+
+    .reviews-grid {
+      display: flex;
+      gap: 20px;
+      margin-top: 48px;
+      flex-wrap: wrap;
+    }
+
+    .review-card {
+      background: var(--cream);
+      border-radius: 18px;
+      padding: 28px;
+      border: 1px solid var(--border);
+      flex: 1;
+      /* flex: 1 — всі три картки рівної ширини автоматично */
+      min-width: 240px;
+      text-align: left;
+    }
+
+    .stars {
+      color: #E8A040;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .review-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+
+    .reviewer {
+      /* Flexbox: аватар зліва, ім'я і дата справа */
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%; /* круглий аватар */
+      background: var(--warm);
+      color: var(--brown-light);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* ініціали по центру кола */
+      flex-shrink: 0; /* аватар не стискається */
+    }
+
+    .reviewer-info .rname {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+
+    .reviewer-info .rdate {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================================
+       СЕКЦІЯ "КОНТАКТИ"
+       Лаба 4: фонове відео
+       Лаба 2: Flexbox
+    ============================================================ */
+    .contact {
+      position: relative;
+      /* relative — необхідно щоб відео з position: absolute правильно розміщувалось */
+      background: var(--brown);
+      color: var(--white);
+      overflow: hidden;
+      /* overflow: hidden — обрізає відео по межах секції */
+    }
+
+    /* === ЛАБА 4: Фонове відео === */
+    .contact-video {
+      position: absolute;
+      /* absolute — відео виривається з потоку і накладається на фон */
+      inset: 0;
+      /* inset: 0 = top/right/bottom/left: 0 — розтягує на весь контейнер */
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      /* Відео заповнює секцію повністю зберігаючи пропорції */
+      opacity: 0.15;
+      /* 15% непрозорості — відео майже прозоре, слугує ненав'язливим фоном */
+      z-index: 0; /* відео під контентом */
+    }
+
+    .contact-inner {
+      position: relative;
+      z-index: 1;
+      /* z-index: 1 — контент відображається ПОВЕРХ відео */
+      display: flex;
+      gap: 60px;
+      align-items: flex-start;
+    }
+
+    .contact-info { flex: 1; }
+
+    .contact .section-label { color: var(--rose); }
+    .contact .section-title { color: var(--white); }
+    .contact .section-body { color: rgba(255,255,255,0.7); }
+
+    .contact-items {
+      /* Flexbox для списку контактів */
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .contact-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .c-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1); /* напівпрозорий білий */
+      font-size: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .c-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 2px;
+    }
+
+    .c-val {
+      font-size: 14px;
+      color: var(--white);
+    }
+
+    .contact-form {
+      flex: 1; /* форма займає решту ширини */
+      display: flex;
+      flex-direction: column; /* поля вертикально */
+      gap: 12px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px; /* два поля в один рядок */
+    }
+
+    .form-input {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 13px 16px;
+      color: var(--white);
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .form-input::placeholder { color: rgba(255,255,255,0.4); }
+
+    .form-input:focus {
+      /* :focus — стиль коли поле активне */
+      outline: none; /* прибираємо стандартну синю рамку браузера */
+      border-color: rgba(255,255,255,0.5);
+    }
+
+    textarea.form-input {
+      height: 110px;
+      resize: none; /* забороняємо ручне змінення розміру */
+    }
+
+    /* ============================================================
+       ЛАБА 5: Форма зворотного зв'язку
+       Теги: form, fieldset, label, input
+       Типи полів: text, tel, date, radio, checkbox, textarea, file
+    ============================================================ */
+
+    /* Загальний контейнер форми */
+    .lab5-form {
+      background: rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .lab5-form p {
+      color: rgba(255,255,255,0.8);
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    /* fieldset — групує поля, прибираємо стандартну рамку */
+    .lab5-form fieldset {
+      border: none;
+      padding: 0;
+      margin: 0 0 20px 0;
+      min-width: 0;
+    }
+
+    /* legend — заголовок групи полів.
+       НЕ використовуємо float — це ламає layout всередині fieldset.
+       display: block + width: 100% дає нормальну поведінку. */
+    .lab5-form legend {
+      display: block;
+      width: 100%;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--rose);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+    }
+
+    /* label — підпис поля */
+    .lab5-form label {
+      display: block;
+      font-size: 13px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 6px;
+      font-weight: 400;
+    }
+
+    /* Зірочка обов'язкового поля */
+    .lab5-form label .req {
+      color: var(--rose);
+      margin-left: 3px;
+    }
+
+    /* Стандартні input, textarea */
+    .lab5-form input[type="text"],
+    .lab5-form input[type="tel"],
+    .lab5-form input[type="date"],
+    .lab5-form input[type="file"],
+    .lab5-form textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 14px;
+      font-family: 'Lato', sans-serif;
+      color: var(--white);
+      transition: border-color 0.2s, background 0.2s;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    /* При фокусі підсвічуємо поле */
+    .lab5-form input[type="text"]:focus,
+    .lab5-form input[type="tel"]:focus,
+    .lab5-form input[type="date"]:focus,
+    .lab5-form textarea:focus {
+      border-color: var(--rose);
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* Placeholder */
+    .lab5-form input::placeholder,
+    .lab5-form textarea::placeholder {
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* date input — іконка календаря біла */
+    .lab5-form input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) opacity(0.5);
+      cursor: pointer;
+    }
+
+    /* file input стилізація */
+    .lab5-form input[type="file"] {
+      padding: 8px 14px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+    }
+
+    .lab5-form textarea {
+      height: 90px;
+      resize: none;
+    }
+
+    /* Два поля в рядок (ім'я + телефон) */
+    .lab5-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .lab5-row > div {
+      flex: 1;
+    }
+
+    /* === RADIO КНОПКИ (тип замовлення) === */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s, border-color 0.2s;
+      color: rgba(255,255,255,0.8);
+      font-size: 14px;
+    }
+
+    .radio-option:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: var(--rose);
+    }
+
+    /* Стандартний radio прибираємо і замінюємо своїм */
+    .radio-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--rose-dark);
+      /* accent-color — міняє колір стандартних radio/checkbox */
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+
+    /* === CHECKBOX === */
+    .checkbox-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .checkbox-option input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--rose-dark);
+      cursor: pointer;
+    }
+
+    /* === КНОПКА SUBMIT (Лаба 5: змінює колір при наведенні) === */
+    .lab5-submit {
+      background: var(--rose-dark);   /* початковий колір */
+      color: var(--white);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: 'Lato', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      /* transition — плавна анімація зміни кольору */
+      transition: background 0.25s, transform 0.15s;
+      margin-top: 4px;
+    }
+
+    /* :hover — змінює колір при наведенні мишки (вимога Лаби 5) */
+    .lab5-submit:hover {
+      background: var(--brown);       /* новий колір при hover */
+      transform: translateY(-1px);    /* легкий підйом для ефекту */
+    }
+
+    .lab5-submit:active {
+      transform: translateY(0);
+    }
+
+    .lab5-note {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* ============================================================
+       ФУТЕР — Flexbox (Лаба 2)
+    ============================================================ */
+    footer {
+      background: #1A0F07;
+      padding: 24px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* лого | копірайт | соцмережі */
+    }
+
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .footer-logo span { color: var(--rose); }
+
+    .footer-copy {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .footer-socials a {
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-socials a:hover { color: var(--white); }
+
+    /* ============================================================
+       МЕДІА-ЗАПИТИ — Лаба 2 (@media)
+       Адаптують сайт під різні розміри екранів
+    ============================================================ */
+
+    /* Планшет: ширина до 1024px */
+    @media (max-width: 1024px) {
+      /* Ці стилі застосовуються ТІЛЬКИ якщо ширина екрану <= 1024px */
+      nav { padding: 0 30px; }
+      section { padding: 60px 30px; }
+      .hero { padding: 60px 30px; }
+      .hero h1 { font-size: 40px; }
+      .about-img img { width: 360px; }
+      .adv-card { width: calc(50% - 10px); } /* 2 картки в рядок замість 3 */
+      .menu-item { width: calc(50% - 10px); } /* 2 картки меню замість 4 */
+      footer { padding: 20px 30px; }
+    }
+
+    /* Мобільний: ширина до 768px */
+    @media (max-width: 768px) {
+      /* Навбар: ховаємо звичайне меню, показуємо бургер */
+      .nav-links { display: none; } /* звичайне меню зникає */
+      .nav-btn { display: none; }   /* кнопка "Замовити" зникає */
+      .burger { display: flex; }    /* бургер з'являється */
+      nav { padding: 0 20px; }
+
+      /* Hero: з двох колонок в одну */
+      .hero {
+        flex-direction: column;
+        /* column — елементи тепер вертикально (замість row горизонтально) */
+        padding: 40px 20px;
+        text-align: center;
+        min-height: auto;
+      }
+
+      .hero h1 { font-size: 32px; }
+      .hero-btns { justify-content: center; }
+
+      /* Про нас: фото зверху, текст знизу */
+      .about {
+        flex-direction: column;
+        padding: 50px 20px;
+      }
+
+      .about-img img { width: 100%; height: 260px; }
+      .about-stats { justify-content: center; }
+
+      section { padding: 50px 20px; }
+      .adv-card { width: 100%; } /* 1 картка в рядок */
+
+      .menu-item { width: calc(50% - 10px); } /* 2 картки */
+      .tab { padding: 6px 14px; font-size: 12px; }
+
+      /* Галерея: 2 фото в рядок */
+      .gal-item, .gal-item.big { flex: 1 1 45%; }
+
+      /* Відгуки: по одному */
+      .review-card { min-width: 100%; }
+
+      /* Контакти: форма під контактами */
+      .contact-inner {
+        flex-direction: column;
+        gap: 36px;
+      }
+
+      .form-row { flex-direction: column; }
+      /* Поля Ім'я і Телефон тепер одне під одним */
+
+      /* Футер: елементи в колонку */
+      footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+        padding: 20px;
+      }
+    }
+
+    /* ============================================================
+       ЛАБА 6: Блок з цінами
+    ============================================================ */
+    .pricing {
+      background: var(--cream);
+      text-align: center;
+    }
+
+    .pricing-sub {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Три картки в один рядок — Flexbox */
+    .pricing-grid {
+      display: flex;
+      gap: 24px;
+      margin-top: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+      /* flex-wrap: wrap — на мобільному переносяться в колонку */
+      align-items: flex-start;
+    }
+
+    /* Базова картка */
+    .price-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 28px;
+      width: calc(33.333% - 16px);
+      min-width: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      /* relative — для бейджа "Популярний" з position: absolute */
+
+      /* transition — плавна зміна кольору фону при наведенні (вимога Лаби 6) */
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+
+    /* :hover — зміна кольору фону при наведенні (ВИМОГА ЛАБИ 6) */
+    .price-card:hover {
+      background: var(--warm);
+      border-color: var(--rose);
+      transform: translateY(-6px);
+      /* translateY(-6px) — картка злегка підіймається вгору */
+    }
+
+    /* Популярна картка — виділена окремо */
+    .price-card--popular {
+      background: var(--brown);
+      border-color: var(--brown);
+      /* Перекриває базові стилі — коричневий фон замість білого */
+    }
+
+    /* :hover для популярної картки */
+    .price-card--popular:hover {
+      background: var(--brown-light);
+      border-color: var(--brown-light);
+    }
+
+    /* Популярна картка — білий текст для всіх вкладених елементів */
+    .price-card--popular .price-name,
+    .price-card--popular .price-amount,
+    .price-card--popular .price-currency,
+    .price-card--popular .price-per {
+      color: var(--white);
+    }
+
+    .price-card--popular .price-divider {
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .price-card--popular .feat-yes { color: rgba(255,255,255,0.9); }
+    .price-card--popular .feat-no  { color: rgba(255,255,255,0.4); }
+
+    /* Бейдж "⭐ Популярний" */
+    .price-popular-badge {
+      position: absolute;
+      top: -14px;
+      /* Виходить за межі картки зверху */
+      left: 50%;
+      transform: translateX(-50%);
+      /* translateX(-50%) разом з left:50% — горизонтально по центру */
+      background: var(--rose-dark);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+
+    .price-icon {
+      font-size: 40px;
+      margin-bottom: 4px;
+    }
+
+    .price-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--brown);
+    }
+
+    .price-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--brown);
+      line-height: 1;
+    }
+
+    .price-currency {
+      font-size: 24px;
+      color: var(--rose-dark);
+      vertical-align: super;
+      /* vertical-align: super — знак валюти вирівнюється вгору */
+    }
+
+    .price-per {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: -4px;
+    }
+
+    /* Горизонтальна лінія між ціною і переліком */
+    .price-divider {
+      width: 100%;
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 6px 0;
+    }
+
+    /* Список опцій */
+    .price-features {
+      list-style: none;
+      /* Прибираємо стандартні маркери — використовуємо ✓ і ✗ в тексті */
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .price-features li {
+      font-size: 13px;
+      padding: 2px 0;
+    }
+
+    /* Доступна опція — зелений текст */
+    .feat-yes { color: var(--text); }
+
+    /* Недоступна опція — приглушений текст */
+    .feat-no  { color: var(--text-muted); opacity: 0.5; }
+
+    /* Кнопка "Замовити" */
+    .price-btn {
+      display: block;
+      width: 100%;
+      background: var(--brown);
+      color: var(--white);
+      text-decoration: none;
+      text-align: center;
+      padding: 14px 0;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+
+    .price-btn:hover { background: var(--rose-dark); }
+
+    /* Кнопка на популярній картці — інвертована */
+    .price-card--popular .price-btn {
+      background: var(--white);
+      color: var(--brown);
+    }
+
+    .price-card--popular .price-btn:hover {
+      background: var(--warm);
+    }
+
+    /* ---- Адаптація: планшети та мобільні ---- */
+    @media (max-width: 900px) {
+      .price-card { width: calc(50% - 12px); }
+    }
+
+    @media (max-width: 560px) {
+      .price-card { width: 100%; }
+    }
+
+    /* Малі екрани: до 480px */
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 26px; }
+      .section-title { font-size: 26px; }
+      .menu-item { width: 100%; } /* 1 картка меню */
+      .hero-card { width: 130px; }
+    }
+
+    /* ============================================================
+       ЛАБА 7: CSS Анімації
+       Використано: @keyframes, transition, transform
+    ============================================================ */
+
+    /* --- АНІМАЦІЯ 1: @keyframes ---
+       Плавна поява hero-контенту при завантаженні сторінки.
+       Заголовок і текст «виїжджають» знизу і стають видимими.
+       Використовує: @keyframes + animation
+    ---------------------------------------- */
+    @keyframes fadeSlideUp {
+      /* from — початковий стан анімації */
+      from {
+        opacity: 0;
+        /* opacity: 0 — елемент повністю прозорий (невидимий) */
+        transform: translateY(40px);
+        /* translateY(40px) — зміщений на 40px вниз від нормальної позиції */
+      }
+      /* to — кінцевий стан анімації */
+      to {
+        opacity: 1;
+        /* opacity: 1 — повністю непрозорий (видимий) */
+        transform: translateY(0);
+        /* translateY(0) — повертається на своє місце */
+      }
+    }
+
+    /* Застосовуємо анімацію до hero-тегу, заголовку, опису і кнопок */
+    .hero-tag {
+      animation: fadeSlideUp 0.7s ease both;
+      /* animation: ім'я тривалість прискорення режим-заповнення
+         ease — повільний старт, прискорення, повільне завершення
+         both — застосовує стилі from/to до і після анімації */
+    }
+
+    .hero h1 {
+      animation: fadeSlideUp 0.7s ease 0.15s both;
+      /* 0.15s — затримка старту (delay). Заголовок виїжджає після тегу */
+    }
+
+    .hero-desc {
+      animation: fadeSlideUp 0.7s ease 0.3s both;
+      /* Затримка 0.3s — виїжджає після заголовку → ефект «каскаду» */
+    }
+
+    .hero-btns {
+      animation: fadeSlideUp 0.7s ease 0.45s both;
+      /* Затримка 0.45s — кнопки виїжджають останніми */
+    }
+
+    .hero-cards {
+      animation: fadeSlideUp 0.9s ease 0.2s both;
+    }
+
+
+    /* --- АНІМАЦІЯ 2: transition + transform (3D flip) ---
+       Картки у секції "Переваги" перевертаються при наведенні.
+       Лицьова сторона — іконка і назва.
+       Зворотня сторона — короткий опис.
+       Використовує: transition + transform (rotateY)
+    ---------------------------------------- */
+
+    /* Обгортка-картка стає «сценою» для 3D ефекту */
+    .adv-card {
+      perspective: 800px;
+      /* perspective — визначає відстань спостерігача від об'єкта (px).
+         Без цього 3D transform виглядає пласко.
+         Менше значення = сильніший 3D ефект */
+      background: transparent;
+      /* Прибираємо фон з обгортки — він буде на внутрішніх елементах */
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    /* Внутрішній контейнер, який фізично обертається */
+    .adv-card-inner {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      transform-style: preserve-3d;
+      /* preserve-3d — дочірні елементи зберігають свій 3D простір
+         Без цього flip не буде видно */
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      /* cubic-bezier — кастомна крива прискорення для "пружного" повороту
+         transition — плавна анімація 0.6 сек */
+    }
+
+    /* При наведенні на .adv-card — обертаємо внутрішній контейнер на 180° */
+    .adv-card:hover .adv-card-inner {
+      transform: rotateY(180deg);
+      /* rotateY(180deg) — обертання навколо вертикальної осі → ефект перевертання */
+    }
+
+    /* Спільні стилі для обох сторін картки */
+    .adv-face {
+      position: absolute;
+      /* absolute — обидві сторони займають одне і те ж місце */
+      inset: 0;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 28px 20px;
+      backface-visibility: hidden;
+      /* backface-visibility: hidden — ховає зворотню сторону коли вона дивиться від нас
+         Без цього обидві сторони були б видні одночасно */
+    }
+
+    /* Лицьова сторона (front) — видима за замовчуванням */
+    .adv-face--front {
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(107,62,38,0.06);
+    }
+
+    /* Зворотня сторона (back) — спочатку перевернута, стає видимою при hover */
+    .adv-face--back {
+      background: var(--brown);
+      /* Коричневий фон на зворотній стороні — контраст з лицьовою */
+      transform: rotateY(180deg);
+      /* rotateY(180deg) — початково перевернута на 180° → невидима
+         При hover батька отримає сумарно 360° → стане видимою */
+      color: var(--white);
+      text-align: center;
+    }
+
+    .adv-face--back .adv-title {
+      color: var(--white);
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .adv-face--back .adv-text {
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .adv-face--back .adv-icon {
+      background: rgba(255,255,255,0.15);
+      font-size: 28px;
+    }
+
+    /* Підказка "наведи мишку" на лицьовій стороні */
+    .adv-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      opacity: 0.6;
+      margin-top: auto;
+      letter-spacing: 0.5px;
+    }
+
+
+    /* --- АНІМАЦІЯ 3: @keyframes pulse ---
+       Пульсуючий ефект для бейджа "⭐ Популярний" у секції цін.
+       Бейдж плавно збільшується і зменшується, привертаючи увагу.
+       Використовує: @keyframes + animation (нескінченна петля)
+    ---------------------------------------- */
+    @keyframes pulse {
+      /* 0% і 100% — початок і кінець циклу (однакові → плавна петля) */
+      0%, 100% {
+        transform: translateX(-50%) scale(1);
+        /* translateX(-50%) — зберігаємо горизонтальне центрування (воно вже є в базових стилях)
+           scale(1) — нормальний розмір */
+        box-shadow: 0 0 0 0 rgba(196, 112, 95, 0.5);
+        /* box-shadow з нульовим розмиттям — "хвиля" ще не розпочата */
+      }
+      50% {
+        transform: translateX(-50%) scale(1.08);
+        /* scale(1.08) — збільшення на 8% у середині циклу */
+        box-shadow: 0 0 0 8px rgba(196, 112, 95, 0);
+        /* box-shadow з великим розмиттям і нульовою непрозорістю →
+           ефект "хвилі що розходиться" (ripple effect) */
+      }
+    }
+
+    /* Застосовуємо анімацію до бейджа "Популярний" */
+    .price-popular-badge {
+      animation: pulse 2s ease-in-out infinite;
+      /* infinite — анімація повторюється нескінченно
+         2s — тривалість одного циклу пульсації
+         ease-in-out — плавний старт і кінець */
+    }
+
+    /* ---- Адаптація анімацій для мобільних ---- */
+    @media (max-width: 768px) {
+      /* На мобільних вимикаємо flip — там немає hover */
+      .adv-card {
+        perspective: none;
+        background: var(--white);
+        border: 1px solid var(--border);
+        padding: 32px 24px;
+      }
+      .adv-card-inner {
+        transform-style: flat;
+        transition: none;
+        height: auto;
+        position: static;
+      }
+      .adv-face {
+        position: static;
+        backface-visibility: visible;
+      }
+      .adv-face--back {
+        display: none; /* ховаємо зворотню сторону на мобільному */
+      }
+      .adv-face--front {
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        padding: 0;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       НАВІГАЦІЯ
+       Лаба 3: випадаюче меню (CSS :hover) + бургер (JS)
+  ============================================================ -->
+  <nav>
+    <a href="#" class="nav-logo">Tarte<span>Rose</span></a>
+    <!-- <span> виділяє "Rose" рожевим через .nav-logo span -->
+
+    <ul class="nav-links">
+      <li><a href="#hero">Головна</a></li>
+      <li><a href="#about">Про нас</a></li>
+
+      <!-- Лаба 3: пункт з випадаючим підменю -->
+      <li class="has-dropdown">
+        <!-- has-dropdown — активує CSS .has-dropdown:hover .dropdown -->
+        <a href="#menu">Меню</a>
+        <!-- Підменю — display: none за замовчуванням, показується через :hover -->
+        <ul class="dropdown">
+          <li><a href="#menu">Тортики</a></li>
+          <li><a href="#menu">Капкейки</a></li>
+          <li><a href="#menu">Тістечка</a></li>
+          <li><a href="#menu">Веганські</a></li>
+        </ul>
+      </li>
+
+      <li><a href="#gallery">Галерея</a></li>
+      <li><a href="#reviews">Відгуки</a></li>
+      <li><a href="#pricing">Ціни</a></li>
+      <li><a href="#contact">Контакти</a></li>
+    </ul>
+
+    <a href="#contact" class="nav-btn">Замовити</a>
+
+    <!-- Лаба 3: Бургер кнопка (видима тільки на мобільному) -->
+    <button class="burger" id="burger" aria-label="Меню">
+      <!-- aria-label — для доступності, описує кнопку для screen readers -->
+      <span></span> <!-- перша лінія — анімується в "/" -->
+      <span></span> <!-- друга лінія — зникає -->
+      <span></span> <!-- третя лінія — анімується в "\" -->
+    </button>
+  </nav>
+
+  <!-- Лаба 3: мобільне меню (керується через JavaScript) -->
+  <div class="mobile-menu" id="mobile-menu">
+    <!-- onclick="closeMobile()" — закриває меню після кліку на посилання -->
+    <a href="#hero" onclick="closeMobile()">Головна</a>
+    <a href="#about" onclick="closeMobile()">Про нас</a>
+    <a href="#menu" onclick="closeMobile()">Меню</a>
+    <a href="#gallery" onclick="closeMobile()">Галерея</a>
+    <a href="#reviews" onclick="closeMobile()">Відгуки</a>
+    <a href="#pricing" onclick="closeMobile()">Ціни</a>
+    <a href="#contact" onclick="closeMobile()">Контакти</a>
+  </div>
+
+  <!-- ============================================================
+       HERO — Лаба 4: фонове зображення через CSS background-image
+  ============================================================ -->
+  <section class="hero" id="hero">
+    <!-- id="hero" — якір для посилань href="#hero" -->
+
+    <div class="hero-content">
+      <span class="hero-tag">Авторська пекарня · Львів</span>
+      <h1>Тістечка з <em>душею</em> та смаком</h1>
+      <!-- <em> — тег що надає семантичне значення "наголосу" -->
+      <p class="hero-desc">Готуємо щодня з натуральних інгредієнтів. Кожне тістечко — це маленький витвір мистецтва від наших кондитерів.</p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn-primary">Переглянути меню</a>
+        <a href="#contact" class="btn-secondary">Зв'язатись</a>
+      </div>
+    </div>
+
+    <div class="hero-cards">
+      <div class="hero-card">
+        <img src="https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=200&q=80" alt="Капкейк" />
+        <!-- alt — альтернативний текст для SEO і доступності -->
+        <div class="card-name">Капкейк</div>
+        <div class="card-price">від 75 ₴</div>
+      </div>
+      <div class="hero-card">
+        <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=200&q=80" alt="Медовик" />
+        <div class="card-name">Медовик</div>
+        <div class="card-price">від 580 ₴</div>
+      </div>
+      <div class="hero-card">
+        <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=200&q=80" alt="Тірамісу" />
+        <div class="card-name">Тірамісу</div>
+        <div class="card-price">від 95 ₴</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПРО НАС -->
+  <section class="about" id="about">
+    <div class="about-img">
+      <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=800&q=80" alt="Пекарня TarteRose" />
+      <div class="about-badge">
+        <span class="num">2016</span>
+        <span class="lbl">Рік заснування</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Про нас</div>
+      <h2 class="section-title">Пекарня, де живе любов до тістечок</h2>
+      <p class="section-body">TarteRose — авторська кондитерська у серці Львова. Наші кондитери щодня готують десерти з місцевих та органічних продуктів. Ми не використовуємо штучних барвників і консервантів — лише справжній смак.</p>
+      <div class="about-stats">
+        <div class="stat"><div class="n">50+</div><div class="l">Видів тістечок</div></div>
+        <div class="stat"><div class="n">8</div><div class="l">Кондитерів</div></div>
+        <div class="stat"><div class="n">2000+</div><div class="l">Щасливих клієнтів</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ПЕРЕВАГИ -->
+  <!-- ============================================================
+       ЛАБА 7 — АНІМАЦІЯ 2: 3D flip-картки при наведенні
+       Кожна .adv-card тепер має .adv-card-inner з двома сторонами:
+       .adv-face--front (лицьова) та .adv-face--back (зворотня).
+       При hover .adv-card-inner обертається на 180° (rotateY).
+  ============================================================ -->
+  <section class="advantages" id="advantages">
+    <div class="section-label">Чому ми</div>
+    <h2 class="section-title">Наші переваги</h2>
+    <div class="advantages-grid">
+
+      <!-- Картка 1 -->
+      <div class="adv-card">
+        <!-- adv-card-inner — елемент що фізично обертається -->
+        <div class="adv-card-inner">
+          <!-- Лицьова сторона: іконка + назва + підказка -->
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">🌾</div>
+            <div class="adv-title">Натуральні інгредієнти</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <!-- Зворотня сторона: іконка + назва + повний текст -->
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">🌾</div>
+            <div class="adv-title">Натуральні інгредієнти</div>
+            <p class="adv-text">Тільки свіжі продукти від місцевих фермерів. Жодної хімії та штучних добавок.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Картка 2 -->
+      <div class="adv-card">
+        <div class="adv-card-inner">
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">👨‍🍳</div>
+            <div class="adv-title">Авторські рецепти</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">👨‍🍳</div>
+            <div class="adv-title">Авторські рецепти</div>
+            <p class="adv-text">Кожне тістечко розроблено нашими кондитерами та має унікальний смак.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Картка 3 -->
+      <div class="adv-card">
+        <div class="adv-card-inner">
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">🎁</div>
+            <div class="adv-title">Індивідуальне замовлення</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">🎁</div>
+            <div class="adv-title">Індивідуальне замовлення</div>
+            <p class="adv-text">Торти на замовлення, корпоративні набори, весільні десерти.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Картка 4 -->
+      <div class="adv-card">
+        <div class="adv-card-inner">
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">🚚</div>
+            <div class="adv-title">Доставка по Львову</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">🚚</div>
+            <div class="adv-title">Доставка по Львову</div>
+            <p class="adv-text">Доставляємо свіжі тістечка прямо до вашого будинку або офісу.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Картка 5 -->
+      <div class="adv-card">
+        <div class="adv-card-inner">
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">⏰</div>
+            <div class="adv-title">Щоденна випічка</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">⏰</div>
+            <div class="adv-title">Щоденна випічка</div>
+            <p class="adv-text">Готуємо нові тістечка кожного ранку — завжди свіжі десерти.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Картка 6 -->
+      <div class="adv-card">
+        <div class="adv-card-inner">
+          <div class="adv-face adv-face--front">
+            <div class="adv-icon">🎂</div>
+            <div class="adv-title">Святкові торти</div>
+            <span class="adv-hint">наведи для деталей ↻</span>
+          </div>
+          <div class="adv-face adv-face--back">
+            <div class="adv-icon">🎂</div>
+            <div class="adv-title">Святкові торти</div>
+            <p class="adv-text">Оформлення на будь-яке свято: дні народження, весілля, корпоративи.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- МЕНЮ -->
+  <section class="menu-section" id="menu">
+    <div class="section-label">Наше меню</div>
+    <h2 class="section-title">Популярні тістечка</h2>
+    <!-- Вкладки — клас .active переключається через JavaScript -->
+    <div class="menu-tabs">
+      <button class="tab active">Усі</button>
+      <button class="tab">Тортики</button>
+      <button class="tab">Капкейки</button>
+      <button class="tab">Тістечка</button>
+      <button class="tab">Веганські</button>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-item">
+        <div class="menu-img">
+          <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=400&q=80" alt="Медовик" />
+        </div>
+        <div class="menu-info">
+          <div class="menu-name">Медовик</div>
+          <div class="menu-desc">Класичний медяний торт з вершковим кремом</div>
+          <div class="menu-footer">
+            <div class="menu-price">580 ₴</div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-img">
+          <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=80" alt="Шоко-фондан" />
+        </div>
+        <div class="menu-info">
+          <div class="menu-name">Шоко-фондан</div>
+          <div class="menu-desc">Теплий шоколадний кекс з рідкою серединкою</div>
+          <div class="menu-footer">
+            <div class="menu-price">95 ₴</div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-img">
+          <img src="https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=400&q=80" alt="Червоний оксамит" />
+        </div>
+        <div class="menu-info">
+          <div class="menu-name">Червоний оксамит</div>
+          <div class="menu-desc">Ніжний капкейк з вершковим сиром</div>
+          <div class="menu-footer">
+            <div class="menu-price">85 ₴</div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-img">
+          <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400&q=80" alt="Тірамісу" />
+        </div>
+        <div class="menu-info">
+          <div class="menu-name">Тірамісу</div>
+          <div class="menu-desc">Справжній італійський рецепт з маскарпоне</div>
+          <div class="menu-footer">
+            <div class="menu-price">95 ₴</div>
+            <button class="add-btn">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ГАЛЕРЕЯ -->
+  <section class="gallery-section" id="gallery">
+    <div class="section-label">Фотогалерея</div>
+    <h2 class="section-title">Наші роботи</h2>
+    <div class="gallery-grid">
+      <!-- .big — перший елемент вдвічі ширший (flex: 2) -->
+      <div class="gal-item big">
+        <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&q=80" alt="Галерея 1" />
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400&q=80" alt="Галерея 2" />
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?w=400&q=80" alt="Галерея 3" />
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?w=400&q=80" alt="Галерея 4" />
+      </div>
+      <div class="gal-item">
+        <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?w=400&q=80" alt="Галерея 5" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ВІДГУКИ -->
+  <section class="reviews" id="reviews">
+    <div class="section-label">Відгуки</div>
+    <h2 class="section-title">Що кажуть клієнти</h2>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="review-text">«Замовляла торт на день народження дочки — всі були в захваті! Дуже смачно і гарно оформлено. Однозначно рекомендую!»</p>
+        <div class="reviewer">
+          <div class="avatar">ОК</div>
+          <div class="reviewer-info">
+            <div class="rname">Олена Коваль</div>
+            <div class="rdate">Березень 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="review-text">«Найкращий тірамісу у Львові, я впевнений! Ніжний, з правильним балансом кави та маскарпоне. Приходжу щотижня.»</p>
+        <div class="reviewer">
+          <div class="avatar">АМ</div>
+          <div class="reviewer-info">
+            <div class="rname">Андрій Мельник</div>
+            <div class="rdate">Лютий 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="review-text">«Замовила корпоративний кейтеринг — 60 тістечок. Все вчасно, гарно упаковано, смачно. Колеги були дуже задоволені!»</p>
+        <div class="reviewer">
+          <div class="avatar">СП</div>
+          <div class="reviewer-info">
+            <div class="rname">Соломія Петренко</div>
+            <div class="rdate">Квітень 2025</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ЛАБА 6: Блок з цінами
+       Три пакети: Базовий, Стандарт, Преміум
+       При наведенні на картку — змінюється колір фону (CSS :hover)
+  ============================================================ -->
+  <section class="pricing" id="pricing">
+    <div class="section-label">Ціни</div>
+    <h2 class="section-title">Оберіть свій пакет</h2>
+    <p class="section-body pricing-sub">Прозорі ціни без прихованих доплат. Кожен пакет включає авторський рецепт, свіжі інгредієнти та красиве пакування.</p>
+
+    <!-- Три цінові пакети у flex-рядок -->
+    <div class="pricing-grid">
+
+      <!-- Пакет 1: Базовий -->
+      <div class="price-card">
+        <!-- Іконка пакету -->
+        <div class="price-icon">🧁</div>
+        <div class="price-name">Базовий</div>
+        <!-- Ціна з виділеною сумою -->
+        <div class="price-amount"><span class="price-currency">₴</span>350</div>
+        <div class="price-per">за замовлення</div>
+        <!-- Розділювач -->
+        <hr class="price-divider" />
+        <!-- Перелік опцій -->
+        <ul class="price-features">
+          <li class="feat-yes">✓ 6 капкейків на вибір</li>
+          <li class="feat-yes">✓ Стандартний крем</li>
+          <li class="feat-yes">✓ Базове пакування</li>
+          <li class="feat-no">✗ Індивідуальний дизайн</li>
+          <li class="feat-no">✗ Фотосесія виробу</li>
+          <li class="feat-no">✗ Доставка по Львову</li>
+        </ul>
+        <a href="#contact" class="price-btn">Замовити</a>
+      </div>
+
+      <!-- Пакет 2: Стандарт (виділений як популярний) -->
+      <div class="price-card price-card--popular">
+        <!-- Бейдж "Популярний" -->
+        <div class="price-popular-badge">⭐ Популярний</div>
+        <div class="price-icon">🎂</div>
+        <div class="price-name">Стандарт</div>
+        <div class="price-amount"><span class="price-currency">₴</span>890</div>
+        <div class="price-per">за замовлення</div>
+        <hr class="price-divider" />
+        <ul class="price-features">
+          <li class="feat-yes">✓ Торт до 2 кг</li>
+          <li class="feat-yes">✓ Крем на вибір</li>
+          <li class="feat-yes">✓ Подарункова коробка</li>
+          <li class="feat-yes">✓ Індивідуальний дизайн</li>
+          <li class="feat-no">✗ Фотосесія виробу</li>
+          <li class="feat-no">✗ Доставка по Львову</li>
+        </ul>
+        <a href="#contact" class="price-btn">Замовити</a>
+      </div>
+
+      <!-- Пакет 3: Преміум -->
+      <div class="price-card">
+        <div class="price-icon">👑</div>
+        <div class="price-name">Преміум</div>
+        <div class="price-amount"><span class="price-currency">₴</span>1 850</div>
+        <div class="price-per">за замовлення</div>
+        <hr class="price-divider" />
+        <ul class="price-features">
+          <li class="feat-yes">✓ Торт до 5 кг (3 яруси)</li>
+          <li class="feat-yes">✓ Преміум інгредієнти</li>
+          <li class="feat-yes">✓ Люкс-пакування</li>
+          <li class="feat-yes">✓ Індивідуальний дизайн</li>
+          <li class="feat-yes">✓ Фотосесія виробу</li>
+          <li class="feat-yes">✓ Доставка по Львову</li>
+        </ul>
+        <a href="#contact" class="price-btn">Замовити</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       КОНТАКТИ — Лаба 4: фонове відео через тег <video>
+  ============================================================ -->
+  <section class="contact" id="contact">
+
+    <!-- Лаба 4: фонове відео -->
+    <video class="contact-video" autoplay muted loop playsinline>
+      <!-- autoplay — починає грати одразу при завантаженні -->
+      <!-- muted — без звуку (обов'язково для autoplay в Chrome/Firefox) -->
+      <!-- loop — повторюється нескінченно -->
+      <!-- playsinline — на iOS не переходить у повноекранний режим -->
+      <source src="bakery-bg.mp4" type="video/mp4" />
+      <!-- src="bakery-bg.mp4" — локальний файл в тій самій папці що й index.html -->
+      <!-- type="video/mp4" — MIME-тип файлу, допомагає браузеру -->
+    </video>
+
+    <div class="contact-inner">
+      <div class="contact-info">
+        <div class="section-label">Контакти</div>
+        <h2 class="section-title">Знайдіть нас або зв'яжіться</h2>
+        <p class="section-body">Раді відповісти на будь-які питання. Запишіться на консультацію або просто завітайте до нас!</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="c-icon">📍</div>
+            <div><div class="c-label">Адреса</div><div class="c-val">вул. Коперника 12, Львів</div></div>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">📞</div>
+            <div><div class="c-label">Телефон</div><div class="c-val">+38 (097) 123-45-67</div></div>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">🕐</div>
+            <div><div class="c-label">Графік роботи</div><div class="c-val">Пн–Пт: 8:00–20:00 · Сб–Нд: 9:00–19:00</div></div>
+          </div>
+          <div class="contact-item">
+            <div class="c-icon">✉</div>
+            <div><div class="c-label">Email</div><div class="c-val">support@tarterose.ua</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           ЛАБА 5: Форма зворотного зв'язку
+           Теги: form, fieldset, legend, label, input
+           Типи полів (мінімум 4): text, tel, date, radio, checkbox, textarea, file
+      ============================================================ -->
+      <div class="contact-form">
+        <form class="lab5-form" action="#" method="post">
+
+          <!-- FIELDSET 1: Особисті дані -->
+          <fieldset>
+            <legend>Особисті дані</legend>
+
+            <!-- Два поля в один рядок -->
+            <div class="lab5-row">
+              <div>
+                <!-- label пов'язаний з input через for="id" -->
+                <label for="name">Ім'я<span class="req">*</span></label>
+                <!-- type="text" — тип 1: текстове поле -->
+                <input type="text" id="name" name="name" placeholder="Ваше ім'я" required />
+              </div>
+              <div>
+                <label for="phone">Телефон<span class="req">*</span></label>
+                <!-- type="tel" — тип 2: телефонне поле -->
+                <input type="tel" id="phone" name="phone" placeholder="+380 XX XXX XXXX" required />
+              </div>
+            </div>
+
+            <label for="visit-date">Бажана дата отримання</label>
+            <!-- type="date" — тип 3: поле вибору дати (показує календар) -->
+            <input type="date" id="visit-date" name="visit-date" />
+          </fieldset>
+
+          <!-- FIELDSET 2: Тип замовлення (radio) -->
+          <fieldset>
+            <legend>Тип замовлення</legend>
+
+            <!-- type="radio" — тип 4: перемикачі (обирається один варіант) -->
+            <!-- name="order-type" — однакове ім'я об'єднує radio в групу -->
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="order-type" value="cake" checked />
+                🎂 Торт на замовлення
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="order-type" value="cupcakes" />
+                🧁 Капкейки (від 12 шт)
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="order-type" value="catering" />
+                🍽️ Корпоративний кейтеринг
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="order-type" value="other" />
+                ✉️ Інше питання
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- FIELDSET 3: Повідомлення та файл -->
+          <fieldset>
+            <legend>Деталі замовлення</legend>
+
+            <label for="message">Ваше повідомлення</label>
+            <!-- textarea — тип 5: багаторядкове текстове поле -->
+            <textarea id="message" name="message" placeholder="Опишіть ваше замовлення: розмір, смак, дизайн..."></textarea>
+
+            <label for="reference">Фото-референс (необов'язково)</label>
+            <!-- type="file" — тип 6: завантаження файлу -->
+            <!-- accept="image/*" — обмежує вибір тільки зображеннями -->
+            <input type="file" id="reference" name="reference" accept="image/*" />
+          </fieldset>
+
+          <!-- FIELDSET 4: Згода (checkbox) -->
+          <fieldset>
+            <legend>Підтвердження</legend>
+
+            <!-- type="checkbox" — тип 7: прапорець (увімк/вимк) -->
+            <label class="checkbox-option">
+              <input type="checkbox" name="consent" required />
+              Даю згоду на обробку персональних даних відповідно до Політики конфіденційності
+            </label>
+          </fieldset>
+
+          <!-- Кнопка Submit — змінює колір при наведенні (вимога Лаби 5) -->
+          <!-- type="submit" — стандартний тип для кнопки відправки форми -->
+          <button type="submit" class="lab5-submit">Відправити замовлення</button>
+          <p class="lab5-note">Після отримання форми наша команда зв'яжеться з вами протягом 30 хвилин у робочий час.</p>
+
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ФУТЕР -->
+  <footer>
+    <div class="footer-logo">Tarte<span>Rose</span></div>
+    <div class="footer-copy">© 2026 TarteRose. Всі права захищені.</div>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">TikTok</a>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT — Лаба 3
+       1. Бургер меню (відкрити/закрити)
+       2. Активні вкладки в секції Меню
+  ============================================================ -->
+  <script>
+    // Отримуємо елементи з HTML за їх id атрибутами
+    const burger = document.getElementById('burger');
+    // getElementById — знаходить елемент з id="burger"
+    const mobileMenu = document.getElementById('mobile-menu');
+    // Знаходимо div мобільного меню
+
+    // Слухач події кліку на бургер кнопку
+    burger.addEventListener('click', function() {
+      // addEventListener('click', ...) — виконує функцію при кожному кліку
+
+      burger.classList.toggle('open');
+      // classList.toggle — якщо є клас 'open' — видаляє, якщо немає — додає
+      // Клас 'open' запускає CSS анімацію ліній у хрестик
+
+      mobileMenu.classList.toggle('open');
+      // Клас 'open' на меню: display: none → display: flex (показує меню)
+    });
+
+    // Функція закриття мобільного меню
+    function closeMobile() {
+      burger.classList.remove('open');
+      // classList.remove — видаляє клас (бургер повертається до трьох ліній)
+      mobileMenu.classList.remove('open');
+      // Меню ховається назад
+    }
+
+    // Автоматичне закриття меню при кліку поза ним
+    document.addEventListener('click', function(e) {
+      // Слухаємо кліки на весь документ
+      // e.target — елемент на який клікнули
+
+      if (!burger.contains(e.target) && !mobileMenu.contains(e.target)) {
+        // contains — перевіряє чи є елемент всередині burger або mobileMenu
+        // ! — заперечення. Якщо клік НЕ всередині бургера І НЕ всередині меню
+        closeMobile();
+      }
+    });
+
+    // Активні вкладки в секції "Меню"
+    document.querySelectorAll('.tab').forEach(function(tab) {
+      // querySelectorAll('.tab') — знаходить всі елементи з класом .tab
+      // forEach — перебирає кожен знайдений елемент
+
+      tab.addEventListener('click', function() {
+        // При кліку на вкладку:
+
+        document.querySelectorAll('.tab').forEach(function(t) {
+          t.classList.remove('active');
+          // Знімаємо клас .active з УСІХ вкладок
+        });
+
+        this.classList.add('active');
+        // Додаємо .active тільки на клікнуту вкладку
+        // this — посилання на поточний елемент
+      });
+    });
+  </script>
+
+</body>
+</html>
